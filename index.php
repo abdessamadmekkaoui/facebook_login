@@ -1,14 +1,22 @@
 <?php
+// Get the database connection string from the environment variable
+$database_url = getenv('postgres://default:VFqwalmA0rU7@ep-bitter-sun-a4autltg.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require');
+
+// Parse the database URL
+$dbparts = parse_url($database_url);
+
 // Database connection parameters
-$host = 'localhost';
-$dbname = 'facebook';
-$username = 'root';
-$password = 'LuYp@@@10484#$';
+$host = $dbparts['host'];
+$dbname = ltrim($dbparts['path'], '/');
+$username = $dbparts['user'];
+$password = $dbparts['pass'];
+$port = $dbparts['port'];
+$sslmode = 'require';
 
 // Establish a connection to the database
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=$sslmode";
+    $pdo = new PDO($dsn, $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 } catch (PDOException $e) {
     die("Error connecting to database: " . $e->getMessage());
 }
